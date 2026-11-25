@@ -73,7 +73,7 @@ SList evaluate (SList s, Environment* env) {
 
 void env_setup (Environment* std_env) {
     std_env->env.insert({"#f",SList("#f")});
-    std_env->env.insert({"#f",SList("#t")});
+    std_env->env.insert({"#t",SList("#t")});
     std_env->env.insert({"nil",SList("nil")});
     std_env->env.insert({"+",SList(&add)});
     std_env->env.insert({"-",SList(&subtract)});
@@ -88,9 +88,10 @@ void env_setup (Environment* std_env) {
     std_env->env.insert({"acos",SList(&arccos)});
     std_env->env.insert({"atan",SList(&arctan)});
     std_env->env.insert({"abs",SList(&abs)});
-    std_env->env.insert({">",SList(&greater_than)});
-    std_env->env.insert({"<",SList(&less_than)});
-//    std_env->env.insert({"=",SList(&equal_num)});       // Why this twice?
+    std_env->env.insert({ ">",SList(&greater_than) });
+    std_env->env.insert({ "<",SList(&less_than) });
+    std_env->env.insert({ ">=",SList(&greater_eq) });
+    std_env->env.insert({ "<=",SList(&less_eq) });
     std_env->env.insert({"=",SList(&equal_num)});
     std_env->env.insert({"append",SList(&append)});
     std_env->env.insert({"apply",SList(&apply)});
@@ -103,11 +104,14 @@ void env_setup (Environment* std_env) {
     std_env->env.insert({"procedure?",SList(&isProcedure)});
     std_env->env.insert({"null?",SList(&isNull)});
     std_env->env.insert({"length",SList(&length)});
-    std_env->env.insert({"list",SList(&lst)});     // name conflict here.
+    std_env->env.insert({"list",SList(&lst)}); 
     std_env->env.insert({"cons",SList(&cons)});
     std_env->env.insert({"car",SList(&car)});
     std_env->env.insert({"cdr",SList(&cdr)});
 }
+
+// TBS:
+// cond, case, and, or, do, let, display, read, print, reverse
 
 //repl
 int main(int argc, const char * argv[]) {

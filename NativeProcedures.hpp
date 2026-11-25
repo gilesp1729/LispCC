@@ -33,7 +33,9 @@ SList arctan (const SLists& arg);
 SList abs (const SLists& arg);
 
 SList greater_than(const SLists& argv);
-SList less_than (const SLists& argv);
+SList less_than(const SLists& argv);
+SList greater_eq(const SLists& argv);
+SList less_eq(const SLists& argv);
 SList equal_num (const SLists& argv);
 SList append (const SLists& argv);
 SList apply (const SLists& argv);

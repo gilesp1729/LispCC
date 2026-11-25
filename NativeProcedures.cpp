@@ -100,7 +100,7 @@ SList equal_num (const SLists& argv) {
     return SList("#t");
 }
 
-SList greater_equal (const SLists& argv) {
+SList greater_eq (const SLists& argv) {
     for (auto vi = argv.begin(); vi != argv.end()-1; vi++) {
         if (atof((*(vi+1)).val().c_str()) > atof((*vi).val().c_str()))
             return SList("#f");
@@ -108,7 +108,7 @@ SList greater_equal (const SLists& argv) {
     return SList("#t");
 }
 
-SList less_equal (const SLists& argv) {
+SList less_eq (const SLists& argv) {
     for (auto vi = argv.begin(); vi != argv.end()-1; vi++) {
         if (atof((*(vi+1)).val().c_str()) < atof((*vi).val().c_str()))
             return SList("#f");
