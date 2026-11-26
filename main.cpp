@@ -22,119 +22,164 @@ using namespace std;
 SLists getArgs (SList l) {
     SLists unproc_args = l.getList();
     SLists args;
-    for (int i = 1; i < unproc_args.size(); i++) {
+    for (int i = 1; i < unproc_args.size(); i++) 
         args.push_back(unproc_args[i]);
-    }
+
     return args;
 }
 
 SList evaluate (SList s, Environment* env) {
    // cout << "EVAL> " << s.getPrintString() << endl;   // for debugging
-    if (s.getType() == SList::SYMBOL) {             //variable reference
+    if (s.getType() == SList::SYMBOL) 
+    {             //variable reference
         if (s.val()[0] == '\'')
             return SList(s.val().substr(1,s.val().length()-1));
         return (*(env->find(s.val())))[s.val()];
-    } else if (s.getType() == SList::NUMBER) {      //constant literal
+    } 
+    else if (s.getType() == SList::NUMBER) 
+    {      //constant literal
         return s;
-    } else if (s.getList().size() == 0) {
+    } 
+    else if (s.getList().size() == 0) 
+    {
         return s;
-    } else if (s.getList()[0].val() == "define") {
+    } 
+    else if (s.getList()[0].val() == "define") 
+    {
         return (env->env[s.getList()[1].val()] = evaluate(s.getList()[2],env));
-    } else if (s.getList()[0].val() == "lambda") {
+    } 
+    else if (s.getList()[0].val() == "lambda") 
+    {
         s.setType(SList::LAMBDA);
         return s;
-    } else if (s.getList()[0].val() == "quote") {
+    } 
+    else if (s.getList()[0].val() == "quote") 
+    {
         return s.getList()[1];
-    } else if (s.getList()[0].val() == "set!") {
+    } 
+    else if (s.getList()[0].val() == "set!") 
+    {
         (*(env->find(s.getList()[1].val())))[s.getList()[1].val()] = evaluate(s.getList()[2],env);
         return SList();
-    } else if (s.getList()[0].val() == "if") {
-        return evaluate(s.getList()[1],env).val()=="#t" ? evaluate(s.getList()[2],env) : (s.getList()[3].val() == "else" ? evaluate(s.getList()[4],env) : SList());
-    } else if (s.getList()[0].val() == "begin") {
+    } 
+    else if (s.getList()[0].val() == "if") 
+    {  // CMU Scheme: anything that isn't #f is True
+        return evaluate(s.getList()[1],env).val()!="#f" ? evaluate(s.getList()[2],env) : (s.getList()[3].val() == "else" ? evaluate(s.getList()[4],env) : SList());
+    } 
+    else if (s.getList()[0].val() == "and")
+    {
+        for (int i = 1; i < s.getList().size(); i++)
+        {
+            if (evaluate(s.getList()[i], env).val() == "#f")
+                return SList("#f");
+        }
+        return SList("#t");
+    }
+    else if (s.getList()[0].val() == "or")
+    {
+        for (int i = 1; i < s.getList().size(); i++)
+        {
+            if (evaluate(s.getList()[i], env).val() != "#f")
+                return SList("#t");
+        }
+        return SList("#f");
+    }
+    else if (s.getList()[0].val() == "begin") 
+    {
         for (int i = 1; i < s.getList().size()-1; i++) evaluate(s.getList()[i], env);
-        return evaluate(s.getList()[s.getList().size()-1],env);
-    } else if (s.getList()[0].val() == "load") {
+            return evaluate(s.getList()[s.getList().size()-1],env);
+    } 
+    else if (s.getList()[0].val() == "load") 
+    {
         return load(s.getList()[1].val(), env);
-    } else {            //procedure call
+    } 
+    else 
+    {            //procedure call
         SList p = evaluate(s.getList()[0],env);
         SLists args = getArgs(s);
         for (int i = 0; i < args.size(); i++)
             args[i] = evaluate (args[i],env);
-        if (p.getType() == SList::LAMBDA) {
+        if (p.getType() == SList::LAMBDA) 
             return evaluate(p.getList()[2], new Environment(p.getList()[1].getList(),args,env));
-        } else if (p.getType()==SList::PROC) {
+        else if (p.getType()==SList::PROC) 
             return p.getProc()(args);
-        } else {
+        else 
             return evaluate(p,env);
-        }
     }
 }
 
 
 void env_setup (Environment* std_env) {
-    std_env->env.insert({"#f",SList("#f")});
-    std_env->env.insert({"#t",SList("#t")});
-    std_env->env.insert({"nil",SList("nil")});
-    std_env->env.insert({"+",SList(&add)});
-    std_env->env.insert({"-",SList(&subtract)});
-    std_env->env.insert({"*",SList(&multiply)});
-    std_env->env.insert({"/",SList(&divide)});
-    std_env->env.insert({"mod",SList(&mod)});
-    std_env->env.insert({"sqrt",SList(&sqrt)});
-    std_env->env.insert({"sin",SList(&sin)});
-    std_env->env.insert({"cos",SList(&cos)});
-    std_env->env.insert({"tan",SList(&tan)});
-    std_env->env.insert({"asin",SList(&arcsin)});
-    std_env->env.insert({"acos",SList(&arccos)});
-    std_env->env.insert({"atan",SList(&arctan)});
-    std_env->env.insert({"abs",SList(&abs)});
-    std_env->env.insert({ ">",SList(&greater_than) });
-    std_env->env.insert({ "<",SList(&less_than) });
-    std_env->env.insert({ ">=",SList(&greater_eq) });
-    std_env->env.insert({ "<=",SList(&less_eq) });
-    std_env->env.insert({"=",SList(&equal_num)});
-    std_env->env.insert({"append",SList(&append)});
-    std_env->env.insert({"apply",SList(&apply)});
-    std_env->env.insert({"map",SList(&map)});
-    std_env->env.insert({"max",SList(&max)});
-    std_env->env.insert({"min",SList(&min)});
-    std_env->env.insert({"eqv",SList(&eqv)});
-    std_env->env.insert({"number?",SList(&isNumber)});
-    std_env->env.insert({"list?",SList(&isList)});
-    std_env->env.insert({"procedure?",SList(&isProcedure)});
-    std_env->env.insert({"null?",SList(&isNull)});
-    std_env->env.insert({"length",SList(&length)});
-    std_env->env.insert({"list",SList(&lst)}); 
-    std_env->env.insert({"cons",SList(&cons)});
-    std_env->env.insert({"car",SList(&car)});
-    std_env->env.insert({"cdr",SList(&cdr)});
+    std_env->env.insert({ "#f", SList("#f") });
+    std_env->env.insert({ "#t", SList("#t") });
+    std_env->env.insert({ "nil", SList("nil") });
+    std_env->env.insert({ "+", SList(&add) });
+    std_env->env.insert({ "-", SList(&subtract) });
+    std_env->env.insert({ "*", SList(&multiply) });
+    std_env->env.insert({ "/", SList(&divide) });
+    std_env->env.insert({ "mod", SList(&mod) });
+    std_env->env.insert({ "sqrt", SList(&sqrt) });
+    std_env->env.insert({ "sin", SList(&sin) });
+    std_env->env.insert({ "cos", SList(&cos) });
+    std_env->env.insert({ "tan", SList(&tan) });
+    std_env->env.insert({ "asin", SList(&arcsin) });
+    std_env->env.insert({ "acos", SList(&arccos) });
+    std_env->env.insert({ "atan", SList(&arctan) });
+    std_env->env.insert({ "abs", SList(&abs) });
+    std_env->env.insert({ ">", SList(&greater_than) });
+    std_env->env.insert({ "<", SList(&less_than) });
+    std_env->env.insert({ ">=", SList(&greater_eq) });
+    std_env->env.insert({ "<=", SList(&less_eq) });
+    std_env->env.insert({ "=", SList(&equal_num) });
+    std_env->env.insert({ "append", SList(&append) });
+    std_env->env.insert({ "apply", SList(&apply) });
+    std_env->env.insert({ "map", SList(&map) });
+    std_env->env.insert({ "max", SList(&max) });
+    std_env->env.insert({ "min", SList(&min) });
+    std_env->env.insert({ "eqv", SList(&eqv) });
+    std_env->env.insert({ "number?", SList(&isNumber) });
+    std_env->env.insert({ "list?", SList(&isList) });
+    std_env->env.insert({ "procedure?", SList(&isProcedure) });
+    std_env->env.insert({ "null?", SList(&isNull) });
+    std_env->env.insert({ "length", SList(&length) });
+    std_env->env.insert({ "list", SList(&lst) });
+    std_env->env.insert({ "cons", SList(&cons) });
+    std_env->env.insert({ "car", SList(&car) });
+    std_env->env.insert({ "cdr", SList(&cdr) });
+    std_env->env.insert({ "reverse", SList(&rev) });
 }
 
-// TBS:
-// cond, case, and, or, do, let, display, read, print, reverse
+// TODO as special cases handled here in evaluate:
+// cond, case, do, let 
 
 //repl
 int main(int argc, const char * argv[]) {
     Environment* std_env = new Environment;
     env_setup (std_env);
     cout << FormattedIO::readFile("message.txt") << endl;
-    while (true) {
+    while (true) 
+    {
         SList temp;
-        try {
+        try 
+        {
             std::cout << "schm/> ";
             std::string line = FormattedIO::readLine();
-            if (line.length()==0) continue;
+            if (line.length()==0 || line[0] == ';') continue;  // trap whole-line comment
             //std::cout << line << std::endl;
             temp = evaluate(Parser::parse(line), std_env);
         }
-        catch (const std::string msg) {   // NOTE: must match type passed as msg exactly
+        catch (const std::string msg) 
+        {   // NOTE: must match type passed as msg exactly
             cerr << msg << endl;
             continue;
         }
-        catch (const char* msg) { 
+        catch (const char* msg) 
+        { 
             cerr << msg << endl;
             continue;
-        } catch (...) {
+        } 
+        catch (...) 
+        {
             cerr << "Interpreter Error: Unhandled Exception" << endl;
             continue;
         }
@@ -149,20 +194,27 @@ SList load(std::string filename, Environment *env)
 {
     SList temp;
     std::string line = FormattedIO::readFile(filename);
-    if (line == "")
+    if (line.length() == 0)
     {
         cerr << "Load: File not found or empty file" << endl;
         return temp;
     }
 
-    try {
+    try 
+    {
         // std::cout << line << std::endl;
         temp = evaluate(Parser::parse(line), env);
     }
-    catch (const char* msg) {
+    catch (const std::string msg)
+    {   // NOTE: must match type passed as msg exactly
         cerr << msg << endl;
     }
-    catch (...) {
+    catch (const char* msg) 
+    {
+        cerr << msg << endl;
+    }
+    catch (...) 
+    {
         cerr << "Interpreter Error: Unhandled Exception" << endl;
     }
 

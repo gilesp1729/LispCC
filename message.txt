@@ -1,14 +1,7 @@
-SchemePlusPlus 			
-MIT/GNU Scheme Interpreter	
-Compiled With C++ Apple LLVM 8.1	
-Version Beta 1.0.0		
-*******************************
 
-By Joshua Sun
-Software Engineering Student, University of Waterloo
+MIT Scheme Interpreter
+Based on LispCC by Joshua Sun
 
 MIT License
+Copyright (c) 2026 Gilesp Puckett
 Copyright (c) 2017 Joshua Sun
-
-Check out the latest release @
-https://github.com/jsun98/SchemePlusPlus

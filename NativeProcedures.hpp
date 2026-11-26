@@ -54,5 +54,7 @@ SList length (const SLists& arg);
 SList lst (const SLists& argv);
 SList cons (const SLists& argv);
 SList car (const SLists& argv);
-SList cdr (const SLists& argv);
+SList cdr(const SLists& argv);
+SList rev(const SLists& argv);
+
 #endif /* NativeProcedures_hpp */

@@ -13,14 +13,29 @@ SList Parser::parse(const std::string rawInput) {
     return process_syntax(temp);
 }
 
+std::deque<std::string> Parser::tokenize(const std::string rawInput) 
+{
+    bool in_comment = false;
 
-std::deque<std::string> Parser::tokenize(const std::string rawInput) {
     std::deque<std::string> tokens;
-    for (int i = 0; i < rawInput.length(); ++i) {
-        while (rawInput[i] == ' ' || rawInput[i] == '\t' || rawInput[i] == '\n') ++i;
-        if (rawInput[i] == '(') tokens.push_back("(");
-        else if (rawInput[i] == ')') tokens.push_back(")");
-        else {
+    for (int i = 0; i < rawInput.length(); ++i) 
+    {
+        // Semicolon to end of line (next \n or end of string) ignored as comment.
+        while (in_comment || rawInput[i] == ' ' || rawInput[i] == '\t' || rawInput[i] == '\n')
+        {
+            if (rawInput[i] == '\n')
+                in_comment = false;
+            if (++i == rawInput.length())   // don't fall off the end
+                return tokens;
+        }
+        if (rawInput[i] == ';')
+            in_comment = true;
+        else if (rawInput[i] == '(') 
+            tokens.push_back("(");
+        else if (rawInput[i] == ')') 
+            tokens.push_back(")");
+        else 
+        {
             int j = i;
             while (rawInput[j] && rawInput[j] != ')' && rawInput[j] != '(' && rawInput[j] != ' ' && rawInput[j] != '\t' && rawInput[j] != '\n')
                 ++j;

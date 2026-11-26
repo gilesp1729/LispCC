@@ -125,6 +125,15 @@ SList append (const SLists& argv) {
     return SList(l);
 }
 
+SList rev(const SLists& argv) {
+    SList newList(SList::LIST);
+    for (int i = argv[0].getList().size() - 1; i >= 0 ; i--)
+    {
+        newList.push(argv[0].getList()[i]);
+    }
+    return newList;
+}
+
 SList apply (const SLists& argv) {
     return argv[0].getProc()(argv[1].getList());
 }
@@ -235,3 +244,5 @@ SList cdr (const SLists& argv) {
     return s;
 }
 
+// TODO in native procedures:
+// display, (read, write?)
